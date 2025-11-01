@@ -11,4 +11,5 @@ urlpatterns = [
     path('languages/', include('api.admin.languages.urls')),
     path('books/', include('api.admin.books.urls')),
     path('analytics/', include('api.admin.analytics.urls')),
+    path('tokens/', include('api.admin.tokens.urls')),
 ]
