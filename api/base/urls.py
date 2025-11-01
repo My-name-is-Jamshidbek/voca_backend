@@ -1,33 +1,28 @@
 """
 Base API URLs - Public and Authentication APIs
+Modular structure with separated concerns
 """
-from django.urls import path
+from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from .auth import (
-    RegisterView,
-    CustomTokenObtainPairView,
-    LogoutView,
-    ChangePasswordView
-)
-from . import HealthCheckView, APIRootView
+
+from .common.views import APIRootView
 
 app_name = 'base'
 
 urlpatterns = [
-    # Health and root
-    path('health/', HealthCheckView.as_view(), name='health-check'),
+    # Root endpoint
+    path('', APIRootView.as_view(), name='api-root'),
     
-    # Authentication endpoints
-    path('auth/register/', RegisterView.as_view(), name='register'),
-    path('auth/login/', CustomTokenObtainPairView.as_view(), name='login'),
-    path('auth/logout/', LogoutView.as_view(), name='logout'),
-    path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('auth/verify/', TokenVerifyView.as_view(), name='token_verify'),
-    path('auth/change-password/', ChangePasswordView.as_view(), name='change_password'),
+    # Authentication module
+    path('auth/', include('api.base.authentication.urls')),
     
-    # API Documentation
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('docs/', SpectacularSwaggerView.as_view(url_name='base:schema'), name='swagger-ui'),
-    path('redoc/', SpectacularRedocView.as_view(url_name='base:schema'), name='redoc'),
+    # Health monitoring module
+    path('health/', include('api.base.health.urls')),
+    
+    # Documentation module
+    path('docs/', include('api.base.documentation.urls')),
+    
+    # JWT token endpoints (kept for backward compatibility)
+    path('auth/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
+    path('auth/verify/', TokenVerifyView.as_view(), name='token-verify'),
 ]
